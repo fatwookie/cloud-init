@@ -1,24 +1,14 @@
 #cloud-config
-
-# This is the user-data configuration file for cloud-init. By default this sets
-# up an initial user called "ubuntu" with password "ubuntu", which must be
-# changed at first login. However, many additional actions can be initiated on
-# first boot from this file. The cloud-init documentation has more details:
-
 autoinstall:
   version: 1
   early-commands:
-    - systemctl stop ssh # otherwise packer tries to connect and exceed max attempts
-  apt:
-    primary:
-        - arches: [default]
-          uri: http://ubuntu.mirror.true.nl/ubuntu/
+    - sudo systemctl stop ssh
+  locale: en_US
   keyboard:
     layout: en
     variant: us
   network:
     version: 2
-    renderer: networkd
     ethernets:
       ens33: 
         dhcp4: true
@@ -50,14 +40,20 @@ autoinstall:
   ssh:
     install-server: true
     allow-pw: true
+    authorized-keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHds/cUgjm6XDqMDVn4SjBIujo8mghNm23fPLDcI1PQs vincent@YOGA
   identity:
-    hostname: "siem2"
+    hostname: siem2
     password: "$6$Wvx1OBt65TQmugYf$J0TUfgmlDX8btESPwyE9cHjMUn.fF/SpNHELDd7mzM22C9EYyRdJ7P9PYL8oUNquJNPJ.h8HtG26QCgV.Tv4C/" #r00tme
     username: ubuntu
   package_update: true
   package_upgrade: true
   packages:
     - open-vm-tools
+    - openssh-server
+    - net-tools
+    - ntp
+    - apt-transport-https
     - pwgen
     - curl
     - tmux
